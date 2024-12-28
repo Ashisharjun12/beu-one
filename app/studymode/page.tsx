@@ -87,7 +87,7 @@ interface StudySession {
 const hideScrollbarClass = "scrollbar-none";
 
 export default function StudyModePage() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
   const { toast } = useToast();
   const [isCreating, setIsCreating] = useState(false);
@@ -110,8 +110,17 @@ export default function StudyModePage() {
   const [searchResults, setSearchResults] = useState<Video[]>([]);
 
   useEffect(() => {
-    fetchStudySessions();
-  }, []);
+    // Check if user is not authenticated and authentication check is complete
+    if (status !== "loading" && !session) {
+      router.push('/login');
+      return;
+    }
+    
+    // Only fetch data if user is authenticated
+    if (session) {
+      fetchStudySessions();
+    }
+  }, [session, status]);
 
   useEffect(() => {
     fetchAvailableContent();
@@ -296,6 +305,22 @@ export default function StudyModePage() {
       });
     }
   };
+
+  // Only render content if authenticated
+  if (status === "loading") {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="flex items-center gap-2">
+          <div className="animate-spin h-5 w-5 border-2 border-blue-600 border-t-transparent rounded-full" />
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!session) {
+    return null; // Return nothing while redirecting
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">

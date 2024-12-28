@@ -21,7 +21,7 @@ function LoginContent() {
       <div className="w-full max-w-md space-y-8 p-8 bg-white rounded-xl shadow-lg">
         <div className="text-center">
           <h2 className="mt-6 text-3xl font-bold tracking-tight">
-            Welcome to BEU College
+            Welcome to BEUOne 
           </h2>
           <p className="mt-2 text-sm text-gray-600">
             Sign in to access your account
@@ -36,7 +36,7 @@ function LoginContent() {
         <div className="mt-8 space-y-4">
           <Button
             onClick={() => signIn("google", { callbackUrl })}
-            className="w-full flex items-center justify-center gap-2"
+            className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path
