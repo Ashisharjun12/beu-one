@@ -36,9 +36,9 @@ export default function Navbar() {
         <div className="flex h-full items-center justify-between">
           {/* Logo - Left Section */}
           <Link href="/" className="flex items-center space-x-2">
-            <BookOpen className="h-6 w-6 text-blue-600" />
+           
             <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
-              BeyOne
+              BeuOne
             </span>
           </Link>
 
@@ -69,7 +69,12 @@ export default function Navbar() {
           {/* Auth - Right Section */}
           <div className="flex items-center space-x-4">
             {session?.user ? (
-              <UserAccountNav user={session.user} />
+              <UserAccountNav user={{
+                name: session.user.name,
+                email: session.user.email,
+                image: session.user.image,
+                role: session.user.role
+              }} />
             ) : (
               <Button size="sm" className="bg-blue-600 hover:bg-blue-700" asChild>
                 <Link href="/login">Login</Link>

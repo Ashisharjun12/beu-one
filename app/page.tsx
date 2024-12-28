@@ -86,7 +86,7 @@ export default function Home() {
       <section className="py-16 bg-gradient-to-b from-gray-50 to-white">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
-            Why Choose BeyOne?
+            Why Choose BeuOne?
           </h2>
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             <Card className="bg-gradient-to-br from-white to-blue-50 border-none shadow-lg hover:shadow-xl transition-all">
@@ -213,7 +213,7 @@ export default function Home() {
             Ready to Excel in Your Studies?
           </h2>
           <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-            Join BeyOne today and get access to all study materials you need to succeed.
+            Join BeuOne today and get access to all study materials you need to succeed.
           </p>
           <Link href="/register">
             <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50">

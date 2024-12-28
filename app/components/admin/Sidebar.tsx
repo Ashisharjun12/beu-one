@@ -4,20 +4,15 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
-  LayoutDashboard,
   Users,
   FileText,
   Bell,
   Settings,
   BookOpen,
-  GraduationCap,
-  BarChart,
-  MessageSquare,
   FolderTree,
   BookOpenCheck,
   Building,
   BookText,
-  Video,
   Wrench,
   Calendar,
   Award,
@@ -43,19 +38,6 @@ export default function AdminSidebar() {
         </div>
         
         <nav className="flex-1 px-3 space-y-1">
-          <Link
-            href="/admin"
-            className={cn(
-              "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
-              pathname === "/admin" 
-                ? "bg-blue-50 text-blue-600" 
-                : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-            )}
-          >
-            <LayoutDashboard className="w-5 h-5" />
-            Overview
-          </Link>
-
           <Link
             href="/admin/branches"
             className={cn(
@@ -93,19 +75,6 @@ export default function AdminSidebar() {
           >
             <FileText className="w-5 h-5" />
             Papers
-          </Link>
-
-          <Link
-            href="/admin/video-lectures"
-            className={cn(
-              "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
-              pathname === "/admin/video-lectures" 
-                ? "bg-blue-50 text-blue-600" 
-                : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-            )}
-          >
-            <Video className="w-5 h-5" />
-            Video Lectures
           </Link>
 
           <Link
