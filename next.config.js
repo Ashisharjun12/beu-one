@@ -22,6 +22,12 @@ const nextConfig = {
       },
     ];
   },
+  serverRuntimeConfig: {
+    mySecret: 'secret',
+  },
+  publicRuntimeConfig: {
+    staticFolder: '/static',
+  },
 }
 
 module.exports = nextConfig 

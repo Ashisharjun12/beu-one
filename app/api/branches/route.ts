@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { connectToDB } from "@/app/lib/db";
 import Branch from "@/app/models/branch.model";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/lib/auth";
+
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {

@@ -8,6 +8,8 @@ import Credit from "@/app/models/academic/credit.model";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/lib/auth";
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     await connectToDB();
