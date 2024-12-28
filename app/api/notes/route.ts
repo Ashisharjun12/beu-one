@@ -3,23 +3,22 @@ import { connectToDB } from "@/app/lib/db";
 import Note from "@/app/models/note.model";
 
 export const dynamic = 'force-dynamic';
-export const maxDuration = 300; // Set max duration to 300 seconds
+export const maxDuration = 9; // Set to 9 seconds for safety margin
 
 export async function GET() {
   try {
     await connectToDB();
     
-    // Use lean() for better performance and select only needed fields
+    // Optimize query for speed
     const notes = await Note.find({})
-      .select('title yearId semesterId subject branch fileUrl description uploader')
-      .populate('yearId', 'value label')
-      .populate('semesterId', 'value label')
-      .populate('subject', 'name code')
-      .populate('branch', 'name code')
-      .populate('uploader', 'name email')
+      .select('title yearId semesterId subject branch fileUrl') // Select fewer fields
+      .populate('yearId', 'value')
+      .populate('semesterId', 'value')
+      .populate('subject', 'name')
+      .populate('branch', 'name')
       .sort({ createdAt: -1 })
       .lean()
-      .limit(50); // Limit results for better performance
+      .limit(20); // Reduce limit for faster response
 
     return NextResponse.json(notes);
   } catch (error) {
