@@ -3,20 +3,19 @@ import { connectToDB } from "@/app/lib/db";
 import Organizer from "@/app/models/organizer.model";
 
 export const dynamic = 'force-dynamic';
-export const maxDuration = 300; // Set max duration to 300 seconds
+export const maxDuration = 9; // Set to 9 seconds for safety margin
 
 export async function GET() {
   try {
     await connectToDB();
     
     const organizers = await Organizer.find({})
-      .select('title yearId branch fileUrl description uploader')
-      .populate('yearId', 'value label')
-      .populate('branch', 'name code')
-      .populate('uploader', 'name email')
+      .select('title yearId branch fileUrl') // Select fewer fields
+      .populate('yearId', 'value')
+      .populate('branch', 'name')
       .sort({ createdAt: -1 })
       .lean()
-      .limit(50);
+      .limit(20); // Reduce limit for faster response
 
     return NextResponse.json(organizers);
   } catch (error) {
