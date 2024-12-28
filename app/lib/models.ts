@@ -4,6 +4,7 @@ import { subjectSchema } from '@/app/models/subject.model';
 import { yearSchema } from '@/app/models/academic/year.model';
 import { semesterSchema } from '@/app/models/academic/semester.model';
 import { creditSchema } from '@/app/models/academic/credit.model';
+import { organizerSchema } from '@/app/models/organizer.model';
 
 // Register all models
 export function registerModels() {
@@ -22,5 +23,8 @@ export function registerModels() {
   }
   if (!mongoose.models.Credit) {
     mongoose.model('Credit', creditSchema);
+  }
+  if (!mongoose.models.Organizer) {
+    mongoose.model('Organizer', organizerSchema);
   }
 } 

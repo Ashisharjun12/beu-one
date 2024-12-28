@@ -11,6 +11,11 @@ client.headers['Access-Control-Allow-Origin'] = '*';
 
 const storage = new Storage(client);
 
+// Function to generate proper file view URL
+export const generateFilePreviewURL = (fileId: string) => {
+  return `${process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT}/storage/buckets/${process.env.NEXT_PUBLIC_APPWRITE_BUCKET_ID}/files/${fileId}/view?project=${process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID}`;
+};
+
 // Function to upload PDF and get URLs
 export const uploadPDF = async (file: File) => {
   try {
@@ -21,7 +26,8 @@ export const uploadPDF = async (file: File) => {
     );
     
     const fileId = response.$id;
-    const fileUrl = `${process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT}/storage/buckets/${process.env.NEXT_PUBLIC_APPWRITE_BUCKET_ID}/files/${fileId}/view`;
+    // Generate proper view URL
+    const fileUrl = generateFilePreviewURL(fileId);
     
     return { fileId, fileUrl };
   } catch (error) {
@@ -32,7 +38,7 @@ export const uploadPDF = async (file: File) => {
 
 // Helper function to generate file link from file ID
 export const generateFileLink = (fileId: string) => {
-  return `${process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT}/storage/buckets/${process.env.NEXT_PUBLIC_APPWRITE_BUCKET_ID}/files/${fileId}/view?project=${process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID}&project=${process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID}&mode=admin`;
+  return `${process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT}/storage/buckets/${process.env.NEXT_PUBLIC_APPWRITE_BUCKET_ID}/files/${fileId}/view?project=${process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID}`;
 };
 
 // Function to delete PDF from Appwrite

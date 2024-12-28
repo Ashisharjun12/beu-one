@@ -3,8 +3,9 @@ import { connectToDB } from "@/app/lib/db";
 import Note from "@/app/models/note.model";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/lib/auth";
-import Year from "@/app/models/academic/year.model";
-import Semester from "@/app/models/academic/semester.model";
+import { generateFilePreviewURL } from '@/app/lib/appwrite';
+
+export const dynamic = 'force-dynamic';
 
 export async function POST(req: Request) {
   try {
@@ -17,67 +18,39 @@ export async function POST(req: Request) {
     }
 
     await connectToDB();
-    const { title, yearId, semesterId, subject, branch, description, fileId } = await req.json();
+    const body = await req.json();
 
-    // Validate required fields
-    if (!title?.trim()) {
-      return NextResponse.json(
-        { error: "Title is required" },
-        { status: 400 }
-      );
-    }
+    // Extract fileId from the file object if it's an object
+    const fileData = body.fileId;
+    const fileId = typeof fileData === 'object' ? fileData.fileId : fileData;
+    const fileUrl = typeof fileData === 'object' ? generateFilePreviewURL(fileId) : null;
 
-    if (!fileId) {
-      return NextResponse.json(
-        { error: "File ID is required" },
-        { status: 400 }
-      );
-    }
-
-    // Validate references exist
-    const [year, semester] = await Promise.all([
-      Year.findById(yearId),
-      Semester.findById(semesterId)
-    ]);
-
-    if (!year) {
-      return NextResponse.json(
-        { error: "Invalid year selected" },
-        { status: 400 }
-      );
-    }
-
-    if (!semester) {
-      return NextResponse.json(
-        { error: "Invalid semester selected" },
-        { status: 400 }
-      );
-    }
-
+    // Create note with extracted fileId
     const note = await Note.create({
-      title: title.trim(),
-      yearId,
-      semesterId,
-      subject,
-      branch,
-      description: description?.trim(),
-      fileId,
+      title: body.title,
+      yearId: body.yearId,
+      semesterId: body.semesterId,
+      subject: body.subject,
+      branch: body.branch,
+      fileId: fileId,
+      fileUrl: fileUrl,
+      description: body.description,
       uploader: session.user.id
     });
 
     const populatedNote = await Note.findById(note._id)
-      .populate('yearId', 'value label')
-      .populate('semesterId', 'value label')
-      .populate('subject', 'name code')
-      .populate('branch', 'name code')
+      .populate('yearId')
+      .populate('semesterId')
+      .populate('subject')
+      .populate('branch')
       .populate('uploader', 'name email');
 
     return NextResponse.json(populatedNote, { status: 201 });
   } catch (error: any) {
     console.error("Failed to create note:", error);
-    if (error.name === 'ValidationError') {
+    if (error.code === 11000) {
       return NextResponse.json(
-        { error: "Please fill all required fields" },
+        { error: "Note already exists" },
         { status: 400 }
       );
     }

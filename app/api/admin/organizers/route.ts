@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
 import { connectToDB } from "@/app/lib/db";
 import Organizer from "@/app/models/organizer.model";
+import Year from "@/app/models/academic/year.model";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/lib/auth";
-import Year from "@/app/models/academic/year.model";
+import { generateFilePreviewURL } from '@/app/lib/appwrite';
+
+export const dynamic = 'force-dynamic';
 
 export async function POST(req: Request) {
   try {
@@ -16,7 +19,7 @@ export async function POST(req: Request) {
     }
 
     await connectToDB();
-    const { title, yearId, branch, description, fileId } = await req.json();
+    const { title, yearId, branch, description, fileId: fileData } = await req.json();
 
     // Validate required fields
     if (!title?.trim()) {
@@ -40,12 +43,16 @@ export async function POST(req: Request) {
       );
     }
 
-    if (!fileId) {
+    if (!fileData) {
       return NextResponse.json(
         { error: "File ID is required" },
         { status: 400 }
       );
     }
+
+    // Extract fileId and generate proper URL
+    const fileId = typeof fileData === 'object' ? fileData.fileId : fileData;
+    const fileUrl = typeof fileData === 'object' ? generateFilePreviewURL(fileId) : null;
 
     // Validate year reference exists
     const year = await Year.findById(yearId);
@@ -62,7 +69,8 @@ export async function POST(req: Request) {
       branch,
       description: description?.trim(),
       fileId,
-      uploader: session.user.id  // Add uploader from session
+      fileUrl,
+      uploader: session.user.id
     });
 
     const populatedOrganizer = await Organizer.findById(organizer._id)
