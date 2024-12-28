@@ -21,7 +21,8 @@ const branchSchema = new mongoose.Schema({
   timestamps: true
 });
 
-export default branchSchema;
+// Export both the schema and the model
+const Branch = mongoose.models.Branch || mongoose.model("Branch", branchSchema);
 
-// For backwards compatibility
-export const Branch = mongoose.models.Branch || mongoose.model("Branch", branchSchema); 
+export { branchSchema };
+export { Branch }; 

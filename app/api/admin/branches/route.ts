@@ -1,8 +1,12 @@
 import { NextResponse } from "next/server";
 import { connectToDB } from "@/app/lib/db";
-import { Branch } from "@/app/models/branch.model";
+import mongoose from "mongoose";
+import { branchSchema, Branch } from "@/app/models/branch.model";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/lib/auth";
+
+// Ensure model is registered
+const BranchModel = mongoose.models.Branch || mongoose.model('Branch', branchSchema);
 
 export async function POST(req: Request) {
   try {
@@ -17,7 +21,7 @@ export async function POST(req: Request) {
     await connectToDB();
     const body = await req.json();
     
-    const branch = await Branch.create(body);
+    const branch = await BranchModel.create(body);
     
     return NextResponse.json(branch, { status: 201 });
   } catch (error: any) {
@@ -38,7 +42,7 @@ export async function POST(req: Request) {
 export async function GET() {
   try {
     await connectToDB();
-    const branches = await Branch.find({}).sort({ name: 1 });
+    const branches = await BranchModel.find({}).sort({ name: 1 });
     return NextResponse.json(branches);
   } catch (error) {
     console.error("Failed to fetch branches:", error);
@@ -69,7 +73,7 @@ export async function DELETE(req: Request) {
     }
 
     await connectToDB();
-    const deletedBranch = await Branch.findByIdAndDelete(branchId);
+    const deletedBranch = await BranchModel.findByIdAndDelete(branchId);
 
     if (!deletedBranch) {
       return NextResponse.json(
@@ -109,7 +113,7 @@ export async function PUT(req: Request) {
     }
 
     await connectToDB();
-    const updatedBranch = await Branch.findByIdAndUpdate(
+    const updatedBranch = await BranchModel.findByIdAndUpdate(
       branchId,
       { $set: body },
       { new: true, runValidators: true }
