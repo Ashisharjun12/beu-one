@@ -1,24 +1,30 @@
-import { withAuth } from "next-auth/middleware";
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
-export default withAuth(
-  function middleware(req) {
-    const token = req.nextauth.token;
-    const isAdminRoute = req.nextUrl.pathname.startsWith("/admin");
+export function middleware(request: NextRequest) {
+  // Clone the request headers
+  const requestHeaders = new Headers(request.headers);
 
-    if (isAdminRoute && token?.role !== "admin") {
-      return NextResponse.redirect(new URL("/", req.url));
-    }
-
-    return NextResponse.next();
-  },
-  {
-    callbacks: {
-      authorized: ({ token }) => !!token
-    },
+  // Add API route specific headers
+  if (request.nextUrl.pathname.startsWith('/api/')) {
+    requestHeaders.set('x-url', request.url);
   }
-);
+
+  return NextResponse.next({
+    request: {
+      headers: requestHeaders,
+    },
+  });
+}
 
 export const config = {
-  matcher: ["/admin/:path*", "/profile"]
+  matcher: [
+    '/api/:path*',
+    '/admin/:path*',
+    '/profile',
+    '/auth/:path*',
+    '/login',
+    '/preview',
+    '/videolecture',
+  ],
 }; 

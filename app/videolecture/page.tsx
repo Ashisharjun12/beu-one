@@ -1,8 +1,8 @@
 "use client";
 
+import dynamic from 'next/dynamic';
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import Plyr from "plyr-react";
 import "plyr-react/plyr.css";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,11 @@ interface VideoDetails {
   channelTitle: string;
   viewCount: string;
 }
+
+// Dynamically import Plyr with no SSR
+const Plyr = dynamic(() => import('plyr-react'), {
+  ssr: false,
+});
 
 export default function VideoLecturePage() {
   const searchParams = useSearchParams();

@@ -521,13 +521,13 @@ function PapersPage() {
 
                             {paper.fileUrl && (
                               <div className="flex gap-2 pt-2">
-                                <Button className="flex-1" size="sm" asChild>
+                                <Button className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700" size="sm" asChild>
                                   <a href={paper.fileUrl} target="_blank" rel="noopener noreferrer">
                                     <Eye className="h-4 w-4 mr-2" />
                                     View
                                   </a>
                                 </Button>
-                                <Button className="flex-1" size="sm" asChild>
+                                <Button className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700" size="sm" asChild>
                                   <a href={paper.fileUrl} download>
                                     <Download className="h-4 w-4 mr-2" />
                                     Download

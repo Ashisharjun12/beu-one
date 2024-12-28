@@ -4,8 +4,9 @@ import { signIn } from "next-auth/react";
 import { motion } from "framer-motion";
 import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { Suspense } from "react";
 
-export default function Login() {
+function LoginContent() {
   const searchParams = useSearchParams();
   const error = searchParams.get("error");
   const callbackUrl = searchParams.get("callbackUrl") || "/";
@@ -60,5 +61,13 @@ export default function Login() {
         </div>
       </div>
     </motion.div>
+  );
+}
+
+export default function Login() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <LoginContent />
+    </Suspense>
   );
 } 
