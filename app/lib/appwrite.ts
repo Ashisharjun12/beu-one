@@ -5,29 +5,28 @@ const client = new Client()
   .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT!)
   .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID!);
 
+// Add CORS headers
+client.headers['X-Appwrite-Response-Format'] = '1.0.0';
+client.headers['Access-Control-Allow-Origin'] = '*';
+
 const storage = new Storage(client);
 
 // Function to upload PDF and get URLs
 export const uploadPDF = async (file: File) => {
   try {
-    if (!file || file.type !== 'application/pdf') {
-      throw new Error('Invalid file type. Please upload a PDF file.');
-    }
-
     const response = await storage.createFile(
       process.env.NEXT_PUBLIC_APPWRITE_BUCKET_ID!,
       ID.unique(),
       file
     );
-
-    if (!response.$id) {
-      throw new Error('Failed to upload file to Appwrite');
-    }
-
-    return response.$id;
-  } catch (error: any) {
-    console.error('Appwrite upload error:', error);
-    throw new Error(error.message || 'Failed to upload file');
+    
+    const fileId = response.$id;
+    const fileUrl = `${process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT}/storage/buckets/${process.env.NEXT_PUBLIC_APPWRITE_BUCKET_ID}/files/${fileId}/view`;
+    
+    return { fileId, fileUrl };
+  } catch (error) {
+    console.error('Error uploading PDF:', error);
+    throw error;
   }
 };
 
@@ -39,7 +38,6 @@ export const generateFileLink = (fileId: string) => {
 // Function to delete PDF from Appwrite
 export const deletePDF = async (fileId: string) => {
   try {
-    const storage = new Storage(client);
     await storage.deleteFile(
       process.env.NEXT_PUBLIC_APPWRITE_BUCKET_ID!,
       fileId
