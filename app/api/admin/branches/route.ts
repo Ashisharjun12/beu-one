@@ -8,6 +8,12 @@ import { authOptions } from "@/app/lib/auth";
 // Ensure model is registered
 const BranchModel = mongoose.models.Branch || mongoose.model('Branch', branchSchema);
 
+// Helper function to check if user is admin
+async function checkAdmin() {
+  const session = await getServerSession(authOptions);
+  return session?.user?.role === "admin";
+}
+
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
@@ -55,7 +61,8 @@ export async function GET() {
 
 export async function DELETE(req: Request) {
   try {
-    if (!await isAdmin()) {
+    const session = await getServerSession(authOptions);
+    if (!session?.user || session.user.role !== "admin") {
       return NextResponse.json(
         { error: "Unauthorized: Admin access required" },
         { status: 401 }
@@ -94,7 +101,8 @@ export async function DELETE(req: Request) {
 
 export async function PUT(req: Request) {
   try {
-    if (!await isAdmin()) {
+    const session = await getServerSession(authOptions);
+    if (!session?.user || session.user.role !== "admin") {
       return NextResponse.json(
         { error: "Unauthorized: Admin access required" },
         { status: 401 }
@@ -113,6 +121,7 @@ export async function PUT(req: Request) {
     }
 
     await connectToDB();
+    
     const updatedBranch = await BranchModel.findByIdAndUpdate(
       branchId,
       { $set: body },
