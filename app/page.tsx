@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowRight, BookOpen, FileText, GraduationCap, Users, Bot, Video, Heart, Mail, DollarSign } from "lucide-react";
+import { ArrowRight, BookOpen, FileText, GraduationCap, Users, Bot, Video, Heart, Mail, DollarSign, School } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
@@ -52,7 +52,7 @@ export default function Home() {
   };
 
   return (
-    <main className="flex-1">
+    <div className="min-h-screen flex flex-col">
       {/* Hero Section - Updated gradient */}
       <section className="relative py-20 overflow-hidden bg-gradient-to-br from-blue-600 via-indigo-500 to-purple-600">
         <div className="absolute inset-0 bg-[url(/grid.svg)] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]" />
@@ -219,50 +219,65 @@ export default function Home() {
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </Link>
-    </div>
+        </div>
       </section>
 
-      {/* Footer Section */}
-      <footer className="mt-16 border-t pt-8 pb-4">
-        <div className="relative flex flex-col items-center gap-4">
-          {/* Support & Contact Links - Left Side */}
-          <div className="absolute left-0 flex items-center gap-4">
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="text-rose-500 hover:text-rose-600 hover:bg-rose-50"
-              asChild
-            >
-              <Link href="/donate" className="flex items-center gap-2">
-                <Heart className="h-4 w-4" />
-                <span className="hidden sm:inline">Donate</span>
-              </Link>
-            </Button>
-
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="text-blue-500 hover:text-blue-600 hover:bg-blue-50"
-              asChild
-            >
-              <a 
-                href="mailto:ashishrahul748@gmail.com" 
-                className="flex items-center gap-2"
+      {/* Simplified Footer */}
+      <footer className="mt-auto border-t bg-white/50 backdrop-blur-sm">
+        <div className="container mx-auto px-4 py-6">
+          <div className="flex flex-col items-center gap-6">
+            {/* Links */}
+            <div className="flex items-center gap-6">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="text-rose-500 hover:text-rose-600 hover:bg-rose-50"
+                asChild
               >
-                <Mail className="h-4 w-4" />
-                <span className="hidden sm:inline">Contact</span>
-              </a>
-            </Button>
-          </div>
+                <Link href="/donate" className="flex items-center gap-2">
+                  <Heart className="h-4 w-4" />
+                  <span>Support</span>
+                </Link>
+              </Button>
 
-          {/* Copyright - Center */}
-          <div className="text-center">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="text-blue-500 hover:text-blue-600 hover:bg-blue-50"
+                asChild
+              >
+                <a 
+                  href="mailto:ashishrahul748@gmail.com" 
+                  className="flex items-center gap-2"
+                >
+                  <Mail className="h-4 w-4" />
+                  <span>Contact</span>
+                </a>
+              </Button>
+
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="text-indigo-500 hover:text-indigo-600 hover:bg-indigo-50"
+                asChild
+              >
+                <a 
+                  href="mailto:ashishrahul748@gmail.com?subject=College Admin Request - BeuOne"
+                  className="flex items-center gap-2"
+                >
+                  <School className="h-4 w-4" />
+                  <span>Become Admin</span>
+                </a>
+              </Button>
+            </div>
+
+            {/* Copyright */}
             <p className="text-sm text-gray-500">
-              © {new Date().getFullYear()} BeyOne. All rights reserved.
+              © {new Date().getFullYear()} BeuOne. All rights reserved.
             </p>
           </div>
         </div>
       </footer>
-    </main>
+    </div>
   );
 }
