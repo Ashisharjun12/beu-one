@@ -1,3 +1,10 @@
+const withPWA = require('next-pwa')({
+  dest: 'public',
+  register: true,
+  skipWaiting: true,
+  disable: process.env.NODE_ENV === 'development'
+})
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   eslint: {
@@ -22,20 +29,6 @@ const nextConfig = {
       },
     ];
   },
-  async rewrites() {
-    return [
-      {
-        source: '/appwrite/:path*',
-        destination: `${process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT}/:path*`,
-      },
-    ];
-  },
-  serverRuntimeConfig: {
-    mySecret: 'secret',
-  },
-  publicRuntimeConfig: {
-    staticFolder: '/static',
-  },
 }
 
-module.exports = nextConfig 
+module.exports = withPWA(nextConfig) 
