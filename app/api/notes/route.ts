@@ -9,16 +9,16 @@ export async function GET() {
   try {
     await connectToDB();
     
-    // Optimize query for speed
+    // Include label fields in populate
     const notes = await Note.find({})
-      .select('title yearId semesterId subject branch fileUrl') // Select fewer fields
-      .populate('yearId', 'value')
-      .populate('semesterId', 'value')
-      .populate('subject', 'name')
-      .populate('branch', 'name')
+      .select('title yearId semesterId subject branch fileUrl') 
+      .populate('yearId', 'value label') // Add label field
+      .populate('semesterId', 'value label') // Add label field
+      .populate('subject', 'name code')
+      .populate('branch', 'name code')
       .sort({ createdAt: -1 })
       .lean()
-      .limit(20); // Reduce limit for faster response
+      .limit(20);
 
     return NextResponse.json(notes);
   } catch (error) {

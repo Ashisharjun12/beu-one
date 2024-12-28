@@ -10,12 +10,12 @@ export async function GET() {
     await connectToDB();
     
     const organizers = await Organizer.find({})
-      .select('title yearId branch fileUrl') // Select fewer fields
-      .populate('yearId', 'value')
-      .populate('branch', 'name')
+      .select('title yearId branch fileUrl')
+      .populate('yearId', 'value label')
+      .populate('branch', 'name code')
       .sort({ createdAt: -1 })
       .lean()
-      .limit(20); // Reduce limit for faster response
+      .limit(20);
 
     return NextResponse.json(organizers);
   } catch (error) {
