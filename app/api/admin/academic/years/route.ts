@@ -4,6 +4,8 @@ import Year from "@/app/models/academic/year.model";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/lib/auth";
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     await connectToDB();

@@ -18,4 +18,6 @@ const yearSchema = new mongoose.Schema({
 });
 
 const Year = mongoose.models.Year || mongoose.model("Year", yearSchema);
+
+export { yearSchema };
 export default Year; 

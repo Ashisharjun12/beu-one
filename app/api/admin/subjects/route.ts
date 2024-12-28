@@ -24,6 +24,8 @@ export async function GET() {
   }
 }
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
@@ -59,7 +61,15 @@ export async function POST(req: Request) {
       );
     }
 
-    const subject = await Subject.create(body);
+    const subject = await Subject.create({
+      name: body.title.trim(),
+      code: body.code.trim().toUpperCase(),
+      branchId: body.branchId,
+      yearId: body.yearId,
+      semesterId: body.semesterId,
+      creditId: body.creditId,
+      description: body.description?.trim()
+    });
     
     const populatedSubject = await Subject.findById(subject._id)
       .populate('branchId')

@@ -1,39 +1,24 @@
 import { NextResponse } from "next/server";
 import { connectToDB } from "@/app/lib/db";
-import Subject from "@/app/models/subject.model";
-import Branch from "@/app/models/branch.model";
+import { Subject } from "@/app/models/subject.model";
+import { Branch } from "@/app/models/branch.model";
 import Year from "@/app/models/academic/year.model";
 import Semester from "@/app/models/academic/semester.model";
 import Credit from "@/app/models/academic/credit.model";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/lib/auth";
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
     await connectToDB();
-    const subjects = await Subject.find({}).lean();
-    
-    // Manually populate the references
-    const populatedSubjects = await Promise.all(subjects.map(async (subject) => {
-      const [branch, year, semester, credit] = await Promise.all([
-        Branch.findById(subject.branchId).lean(),
-        Year.findById(subject.yearId).lean(),
-        Semester.findById(subject.semesterId).lean(),
-        Credit.findById(subject.creditId).lean()
-      ]);
+    const subjects = await Subject.find({})
+      .populate('branchId', 'name code')
+      .populate('yearId', 'value label')
+      .populate('semesterId', 'value label')
+      .populate('creditId', 'value label')
+      .sort({ createdAt: -1 });
 
-      return {
-        ...subject,
-        branch,
-        year,
-        semester,
-        credit
-      };
-    }));
-
-    return NextResponse.json(populatedSubjects);
+    return NextResponse.json(subjects);
   } catch (error) {
     console.error("Failed to fetch subjects:", error);
     return NextResponse.json(
