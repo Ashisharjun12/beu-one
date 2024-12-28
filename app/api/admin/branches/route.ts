@@ -1,21 +1,15 @@
 import { NextResponse } from "next/server";
 import { connectToDB } from "@/app/lib/db";
-import Branch from "@/app/models/branch.model";
+import { Branch } from "@/app/models/branch.model";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/lib/auth";
 
-// Helper function to check admin role
-async function isAdmin() {
-  const session = await getServerSession(authOptions);
-  return session?.user?.role === "admin";
-}
-
 export async function POST(req: Request) {
   try {
-    // Check if user is admin
-    if (!await isAdmin()) {
+    const session = await getServerSession(authOptions);
+    if (!session?.user || session.user.role !== "admin") {
       return NextResponse.json(
-        { error: "Unauthorized: Admin access required" },
+        { error: "Unauthorized" },
         { status: 401 }
       );
     }
@@ -23,13 +17,19 @@ export async function POST(req: Request) {
     await connectToDB();
     const body = await req.json();
     
-    const newBranch = await Branch.create(body);
+    const branch = await Branch.create(body);
     
-    return NextResponse.json(newBranch, { status: 201 });
+    return NextResponse.json(branch, { status: 201 });
   } catch (error: any) {
     console.error("Failed to create branch:", error);
+    if (error.code === 11000) {
+      return NextResponse.json(
+        { error: "Branch already exists" },
+        { status: 400 }
+      );
+    }
     return NextResponse.json(
-      { error: error.code === 11000 ? "Branch already exists" : "Failed to create branch" },
+      { error: error.message || "Failed to create branch" },
       { status: 500 }
     );
   }
@@ -37,17 +37,8 @@ export async function POST(req: Request) {
 
 export async function GET() {
   try {
-    // Check if user is admin
-    if (!await isAdmin()) {
-      return NextResponse.json(
-        { error: "Unauthorized: Admin access required" },
-        { status: 401 }
-      );
-    }
-
     await connectToDB();
-    const branches = await Branch.find({}).sort({ createdAt: -1 });
-    
+    const branches = await Branch.find({}).sort({ name: 1 });
     return NextResponse.json(branches);
   } catch (error) {
     console.error("Failed to fetch branches:", error);
