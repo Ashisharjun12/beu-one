@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { User } from "next-auth";
 import { signOut } from "next-auth/react";
-import { LogOut, Settings, User as UserIcon, LayoutDashboard } from "lucide-react";
+import { LogOut, Settings, User as UserIcon, LayoutDashboard, Shield } from "lucide-react";
 import Link from "next/link";
 
 interface UserAccountNavProps {
@@ -20,6 +20,7 @@ interface UserAccountNavProps {
 
 export default function UserAccountNav({ user }: UserAccountNavProps) {
   const isAdmin = user.role === "admin";
+  const isSuperAdmin = user.role === "super_admin";
 
   return (
     <DropdownMenu>
@@ -46,7 +47,19 @@ export default function UserAccountNav({ user }: UserAccountNavProps) {
         
         <DropdownMenuSeparator />
 
-        {isAdmin && (
+        {isSuperAdmin && (
+          <>
+            <DropdownMenuItem asChild>
+              <Link href="/super-admin" className="w-full flex items-center">
+                <Shield className="mr-2 h-4 w-4 text-red-500" />
+                Super Admin
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+          </>
+        )}
+        
+        {(isAdmin || isSuperAdmin) && (
           <>
             <DropdownMenuItem asChild>
               <Link href="/admin" className="w-full flex items-center">
