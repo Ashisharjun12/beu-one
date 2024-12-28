@@ -38,7 +38,7 @@ export async function POST(req: Request) {
                             message.toLowerCase().includes('lecture') ||
                             message.toLowerCase().includes('watch');
 
-    let aiResponse = await model.generateContent(message);
+    const aiResponse = await model.generateContent(message);
     let responseText = aiResponse.response.text();
     let videos = null;
 
