@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowRight, BookOpen, FileText, GraduationCap, Users, Bot, Video } from "lucide-react";
+import { ArrowRight, BookOpen, FileText, GraduationCap, Users, Bot, Video, Heart, Mail, DollarSign } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
@@ -72,7 +72,7 @@ export default function Home() {
                 </Button>
               </Link>
               <Link href="/papers">
-                <Button size="lg" variant="outline" className="text-white border-white hover:bg-white/10">
+                <Button size="lg" variant="outline" className="bg-white text-blue-600 hover:bg-blue-50">
                   Previous Papers
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
@@ -223,6 +223,48 @@ export default function Home() {
           </Link>
     </div>
       </section>
+
+      {/* Footer Section */}
+      <footer className="mt-16 border-t pt-8 pb-4">
+        <div className="relative flex flex-col items-center gap-4">
+          {/* Support & Contact Links - Left Side */}
+          <div className="absolute left-0 flex items-center gap-4">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="text-rose-500 hover:text-rose-600 hover:bg-rose-50"
+              asChild
+            >
+              <Link href="/donate" className="flex items-center gap-2">
+                <Heart className="h-4 w-4" />
+                <span className="hidden sm:inline">Donate</span>
+              </Link>
+            </Button>
+
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="text-blue-500 hover:text-blue-600 hover:bg-blue-50"
+              asChild
+            >
+              <a 
+                href="mailto:ashishrahul748@gmail.com" 
+                className="flex items-center gap-2"
+              >
+                <Mail className="h-4 w-4" />
+                <span className="hidden sm:inline">Contact</span>
+              </a>
+            </Button>
+          </div>
+
+          {/* Copyright - Center */}
+          <div className="text-center">
+            <p className="text-sm text-gray-500">
+              © {new Date().getFullYear()} BeyOne. All rights reserved.
+            </p>
+          </div>
+        </div>
+      </footer>
     </main>
   );
 }
