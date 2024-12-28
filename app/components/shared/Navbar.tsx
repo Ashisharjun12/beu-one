@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useSession } from "next-auth/react";
 import UserAccountNav from "./UserAccountNav";
-import { BookOpen, FileText, GraduationCap } from "lucide-react";
+import { BookOpen, FileText, GraduationCap, MessageSquare, MicVocal } from "lucide-react";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -27,6 +27,11 @@ export default function Navbar() {
       title: "Study Mode",
       href: "/studymode",
       icon: GraduationCap,
+    },
+    {
+      title: "Voices",
+      href: "/voices",
+      icon: MicVocal,
     },
   ];
 

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { BookOpen, FileText, GraduationCap, Home } from "lucide-react";
+import { BookOpen, FileText, GraduationCap, Home, MessageSquare, MicVocal } from "lucide-react";
 
 const routes = [
   {
@@ -23,8 +23,13 @@ const routes = [
   },
   {
     href: "/studymode",
-    label: "Study Mode",
+    label: "Study",
     icon: GraduationCap
+  },
+  {
+    href: "/voices",
+    label: "Voices",
+    icon: MicVocal
   }
 ];
 
