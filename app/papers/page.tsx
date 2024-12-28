@@ -13,10 +13,28 @@ import {
   School,
   GraduationCap,
   Calendar,
-  Star
+  Star,
+  Search
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface Paper {
   _id: string;
@@ -53,6 +71,9 @@ function PapersPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'university' | 'midsem'>('university');
   const { toast } = useToast();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedBranch, setSelectedBranch] = useState<string>("all");
+  const [selectedYear, setSelectedYear] = useState<string>("all");
 
   useEffect(() => {
     fetchPapers(activeTab);
@@ -82,103 +103,17 @@ function PapersPage() {
     setActiveTab(value as 'university' | 'midsem');
   };
 
-  const renderPapers = () => (
-    <div className="grid gap-6">
-      {papers.map((paper) => (
-        <Card 
-          key={paper._id} 
-          className="hover:shadow-lg transition-all border-l-4 hover:scale-[1.02] transform duration-200"
-          style={{
-            borderLeftColor: activeTab === 'university' ? '#3b82f6' : '#8b5cf6'
-          }}
-        >
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-3 flex-1">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900">{paper.title}</h3>
-                    <div className="flex flex-wrap items-center gap-2 mt-2">
-                      <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                        {paper.subject.name}
-                      </span>
-                      <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
-                        {paper.subject.code}
-                      </span>
-                      <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                        {paper.subject.branchId?.name}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    {paper.fileUrl ? (
-                      <>
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          className="hover:bg-blue-50 hover:text-blue-600"
-                          asChild
-                        >
-                          <a href={paper.fileUrl} target="_blank" rel="noopener noreferrer">
-                            <Eye className="h-4 w-4 mr-1" />
-                            View
-                          </a>
-                        </Button>
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          className="hover:bg-green-50 hover:text-green-600"
-                          asChild
-                        >
-                          <a href={paper.fileUrl} download>
-                            <Download className="h-4 w-4 mr-1" />
-                            Download
-                          </a>
-                        </Button>
-                      </>
-                    ) : (
-                      <Button variant="ghost" size="sm" disabled>
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      </Button>
-                    )}
-                  </div>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
-                  <div className="space-y-2">
-                    {activeTab === 'midsem' && paper.college && (
-                      <div className="flex items-center gap-1">
-                        <School className="h-4 w-4 text-purple-500" />
-                        <span>{paper.college.name}</span>
-                      </div>
-                    )}
-                    <div className="flex items-center gap-1">
-                      <BookOpen className="h-4 w-4 text-blue-500" />
-                      <span>{paper.subject.name} ({paper.subject.code})</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <GraduationCap className="h-4 w-4 text-green-500" />
-                      <span>
-                        {paper.subject.branchId?.name} ({paper.subject.branchId?.code})
-                      </span>
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-1">
-                      <Calendar className="h-4 w-4 text-orange-500" />
-                      <span>
-                        {paper.subject.yearId?.label} • {paper.subject.semesterId?.label}
-                      </span>
-                    </div>
-                    
-                  </div>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      ))}
-    </div>
-  );
+  const filteredPapers = papers.filter(paper => {
+    const matchesSearch = 
+      paper.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      paper.subject.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      paper.subject.code.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    const matchesBranch = selectedBranch === "all" || paper.subject.branchId?._id === selectedBranch;
+    const matchesYear = selectedYear === "all" || paper.subject.yearId?._id === selectedYear;
+
+    return matchesSearch && matchesBranch && matchesYear;
+  });
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -189,6 +124,57 @@ function PapersPage() {
         <p className="text-gray-600">
           Access previous year question papers for all subjects
         </p>
+      </div>
+
+      {/* Search and Filters */}
+      <div className="space-y-4 mb-6">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+          <Input
+            placeholder="Search papers by title, subject..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-9"
+          />
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <Select
+            value={selectedBranch}
+            onValueChange={setSelectedBranch}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select Branch" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Branches</SelectItem>
+              {papers.map(paper => paper.subject.branchId).filter((branch, index, self) => 
+                branch && self.findIndex(b => b?._id === branch?._id) === index
+              ).map(branch => branch && (
+                <SelectItem key={branch._id} value={branch._id}>
+                  {branch.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select
+            value={selectedYear}
+            onValueChange={setSelectedYear}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select Year" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Years</SelectItem>
+              {papers.map(paper => paper.subject.yearId).filter((year, index, self) => 
+                year && self.findIndex(y => y?._id === year?._id) === index
+              ).map(year => year && (
+                <SelectItem key={year._id} value={year._id}>
+                  {year.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       <Tabs 
@@ -214,8 +200,8 @@ function PapersPage() {
         </TabsList>
 
         {isLoading ? (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {[...Array(6)].map((_, i) => (
+          <div className="grid gap-4 sm:grid-cols-2">
+            {[...Array(4)].map((_, i) => (
               <Card key={i} className="animate-pulse">
                 <CardContent className="p-6">
                   <div className="h-4 bg-gray-200 rounded w-3/4 mb-4" />
@@ -228,16 +214,334 @@ function PapersPage() {
         ) : (
           <>
             <TabsContent value="university">
-              {papers.length > 0 ? renderPapers() : (
+              {filteredPapers.length > 0 ? (
+                <>
+                  {/* Desktop Table View */}
+                  <div className="hidden md:block">
+                    <div className="rounded-md border bg-white">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead className="w-[40%]">Paper Details</TableHead>
+                            <TableHead className="w-[30%]">Subject Info</TableHead>
+                            <TableHead className="w-[20%]">Academic Info</TableHead>
+                            <TableHead className="w-[10%] text-right">Actions</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {filteredPapers.map((paper) => (
+                            <TableRow key={paper._id}>
+                              <TableCell>
+                                <div className="space-y-1">
+                                  <div className="font-medium">{paper.title}</div>
+                                  {activeTab === 'midsem' && paper.college && (
+                                    <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                                      <School className="h-4 w-4" />
+                                      {paper.college.name}
+                                    </div>
+                                  )}
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <div className="space-y-2">
+                                  <Badge variant="outline" className="bg-blue-50">
+                                    {paper.subject.name}
+                                  </Badge>
+                                  <div className="flex flex-wrap gap-1">
+                                    <Badge variant="secondary" className="text-xs">
+                                      {paper.subject.code}
+                                    </Badge>
+                                    <Badge variant="secondary" className="text-xs">
+                                      {paper.subject.branchId?.name}
+                                    </Badge>
+                                  </div>
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <div className="space-y-1 text-sm">
+                                  <div className="flex items-center gap-1">
+                                    <Calendar className="h-4 w-4 text-orange-500" />
+                                    {paper.subject.yearId?.label}
+                                  </div>
+                                  <div className="flex items-center gap-1">
+                                    <GraduationCap className="h-4 w-4 text-green-500" />
+                                    {paper.subject.semesterId?.label}
+                                  </div>
+                                </div>
+                              </TableCell>
+                              <TableCell className="text-right">
+                                <div className="flex justify-end gap-2">
+                                  {paper.fileUrl ? (
+                                    <>
+                                      <Button 
+                                        variant="ghost" 
+                                        size="sm"
+                                        className="hidden sm:flex hover:bg-blue-50 hover:text-blue-600"
+                                        asChild
+                                      >
+                                        <a href={paper.fileUrl} target="_blank" rel="noopener noreferrer">
+                                          <Eye className="h-4 w-4" />
+                                        </a>
+                                      </Button>
+                                      <Button 
+                                        variant="ghost" 
+                                        size="sm"
+                                        className="hidden sm:flex hover:bg-green-50 hover:text-green-600"
+                                        asChild
+                                      >
+                                        <a href={paper.fileUrl} download>
+                                          <Download className="h-4 w-4" />
+                                        </a>
+                                      </Button>
+                                      {/* Mobile view buttons */}
+                                      <div className="sm:hidden bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700">
+                                        <Button variant="outline" size="sm" className="w-full">
+                                          <Eye className="h-4 w-4 mr-2" />
+                                          View/Download
+                                        </Button>
+                                      </div>
+                                    </>
+                                  ) : (
+                                    <Button variant="ghost" size="sm" disabled>
+                                      <Loader2 className="h-4 w-4 animate-spin" />
+                                    </Button>
+                                  )}
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </div>
+
+                  {/* Mobile Card View */}
+                  <div className="grid gap-4 md:hidden">
+                    {filteredPapers.map((paper) => (
+                      <Card key={paper._id} className="hover:shadow-md transition-shadow">
+                        <CardContent className="p-4">
+                          <div className="space-y-3">
+                            <div>
+                              <h3 className="font-medium line-clamp-2">{paper.title}</h3>
+                              {activeTab === 'midsem' && paper.college && (
+                                <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
+                                  <School className="h-4 w-4" />
+                                  {paper.college.name}
+                                </p>
+                              )}
+                            </div>
+
+                            <div className="flex flex-wrap gap-2">
+                              <Badge variant="outline" className="bg-blue-50">
+                                {paper.subject.name}
+                              </Badge>
+                              <Badge variant="secondary" className="text-xs">
+                                {paper.subject.code}
+                              </Badge>
+                            </div>
+
+                            <div className="flex items-center justify-between text-sm">
+                              <div className="flex items-center gap-1">
+                                <Calendar className="h-4 w-4 text-orange-500" />
+                                {paper.subject.yearId?.label}
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <GraduationCap className="h-4 w-4 text-green-500" />
+                                {paper.subject.semesterId?.label}
+                              </div>
+                            </div>
+
+                            {paper.fileUrl && (
+                              <div className="flex gap-2 pt-2">
+                                <Button className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700" size="sm" asChild>
+                                  <a href={paper.fileUrl} target="_blank" rel="noopener noreferrer">
+                                    <Eye className="h-4 w-4 mr-2" />
+                                    View
+                                  </a>
+                                </Button>
+                                <Button className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700" size="sm" asChild>
+                                  <a href={paper.fileUrl} download>
+                                    <Download className="h-4 w-4 mr-2" />
+                                    Download
+                                  </a>
+                                </Button>
+                              </div>
+                            )}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </>
+              ) : (
                 <div className="text-center py-12">
                   <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900">No university papers found</h3>
-                  <p className="text-gray-500">Papers will be added soon</p>
+                  <h3 className="text-lg font-medium text-gray-900">No papers found</h3>
+                  <p className="text-gray-500">Try adjusting your search or filters</p>
                 </div>
               )}
             </TabsContent>
             <TabsContent value="midsem">
-              {papers.length > 0 ? renderPapers() : (
+              {filteredPapers.length > 0 ? (
+                <>
+                  {/* Desktop Table View */}
+                  <div className="hidden md:block">
+                    <div className="rounded-md border bg-white">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead className="w-[40%]">Paper Details</TableHead>
+                            <TableHead className="w-[30%]">Subject Info</TableHead>
+                            <TableHead className="w-[20%]">Academic Info</TableHead>
+                            <TableHead className="w-[10%] text-right">Actions</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {filteredPapers.map((paper) => (
+                            <TableRow key={paper._id}>
+                              <TableCell>
+                                <div className="space-y-1">
+                                  <div className="font-medium">{paper.title}</div>
+                                  {activeTab === 'midsem' && paper.college && (
+                                    <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                                      <School className="h-4 w-4" />
+                                      {paper.college.name}
+                                    </div>
+                                  )}
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <div className="space-y-2">
+                                  <Badge variant="outline" className="bg-blue-50">
+                                    {paper.subject.name}
+                                  </Badge>
+                                  <div className="flex flex-wrap gap-1">
+                                    <Badge variant="secondary" className="text-xs">
+                                      {paper.subject.code}
+                                    </Badge>
+                                    <Badge variant="secondary" className="text-xs">
+                                      {paper.subject.branchId?.name}
+                                    </Badge>
+                                  </div>
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <div className="space-y-1 text-sm">
+                                  <div className="flex items-center gap-1">
+                                    <Calendar className="h-4 w-4 text-orange-500" />
+                                    {paper.subject.yearId?.label}
+                                  </div>
+                                  <div className="flex items-center gap-1">
+                                    <GraduationCap className="h-4 w-4 text-green-500" />
+                                    {paper.subject.semesterId?.label}
+                                  </div>
+                                </div>
+                              </TableCell>
+                              <TableCell className="text-right">
+                                <div className="flex justify-end gap-2">
+                                  {paper.fileUrl ? (
+                                    <>
+                                      <Button 
+                                        variant="ghost" 
+                                        size="sm"
+                                        className="hidden sm:flex hover:bg-blue-50 hover:text-blue-600"
+                                        asChild
+                                      >
+                                        <a href={paper.fileUrl} target="_blank" rel="noopener noreferrer">
+                                          <Eye className="h-4 w-4" />
+                                        </a>
+                                      </Button>
+                                      <Button 
+                                        variant="ghost" 
+                                        size="sm"
+                                        className="hidden sm:flex hover:bg-green-50 hover:text-green-600"
+                                        asChild
+                                      >
+                                        <a href={paper.fileUrl} download>
+                                          <Download className="h-4 w-4" />
+                                        </a>
+                                      </Button>
+                                      {/* Mobile view buttons */}
+                                      <div className="sm:hidden">
+                                        <Button variant="outline" size="sm" className="w-full">
+                                          <Eye className="h-4 w-4 mr-2" />
+                                          View/Download
+                                        </Button>
+                                      </div>
+                                    </>
+                                  ) : (
+                                    <Button variant="ghost" size="sm" disabled>
+                                      <Loader2 className="h-4 w-4 animate-spin" />
+                                    </Button>
+                                  )}
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </div>
+
+                  {/* Mobile Card View */}
+                  <div className="grid gap-4 md:hidden">
+                    {filteredPapers.map((paper) => (
+                      <Card key={paper._id} className="hover:shadow-md transition-shadow">
+                        <CardContent className="p-4">
+                          <div className="space-y-3">
+                            <div>
+                              <h3 className="font-medium line-clamp-2">{paper.title}</h3>
+                              {activeTab === 'midsem' && paper.college && (
+                                <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
+                                  <School className="h-4 w-4" />
+                                  {paper.college.name}
+                                </p>
+                              )}
+                            </div>
+
+                            <div className="flex flex-wrap gap-2">
+                              <Badge variant="outline" className="bg-blue-50">
+                                {paper.subject.name}
+                              </Badge>
+                              <Badge variant="secondary" className="text-xs">
+                                {paper.subject.code}
+                              </Badge>
+                            </div>
+
+                            <div className="flex items-center justify-between text-sm">
+                              <div className="flex items-center gap-1">
+                                <Calendar className="h-4 w-4 text-orange-500" />
+                                {paper.subject.yearId?.label}
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <GraduationCap className="h-4 w-4 text-green-500" />
+                                {paper.subject.semesterId?.label}
+                              </div>
+                            </div>
+
+                            {paper.fileUrl && (
+                              <div className="flex gap-2 pt-2">
+                                <Button className="flex-1" size="sm" asChild>
+                                  <a href={paper.fileUrl} target="_blank" rel="noopener noreferrer">
+                                    <Eye className="h-4 w-4 mr-2" />
+                                    View
+                                  </a>
+                                </Button>
+                                <Button className="flex-1" size="sm" asChild>
+                                  <a href={paper.fileUrl} download>
+                                    <Download className="h-4 w-4 mr-2" />
+                                    Download
+                                  </a>
+                                </Button>
+                              </div>
+                            )}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </>
+              ) : (
                 <div className="text-center py-12">
                   <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                   <h3 className="text-lg font-medium text-gray-900">No midsem papers found</h3>

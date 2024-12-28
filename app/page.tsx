@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowRight, BookOpen, FileText, GraduationCap, Users } from "lucide-react";
+import { ArrowRight, BookOpen, FileText, GraduationCap, Users, Bot, Video } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
@@ -88,37 +88,75 @@ export default function Home() {
           <h2 className="text-3xl font-bold text-center mb-12 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
             Why Choose BeyOne?
           </h2>
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             <Card className="bg-gradient-to-br from-white to-blue-50 border-none shadow-lg hover:shadow-xl transition-all">
-              <CardContent className="p-6">
+              <CardContent className="p-4 md:p-6">
                 <div className="bg-gradient-to-br from-blue-500 to-indigo-500 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
+                  <Bot className="h-6 w-6 text-white" />
+                </div>
+                <h3 className="text-base md:text-xl font-semibold mb-2">AI Assistant</h3>
+                <p className="text-sm md:text-base text-gray-600">
+                  Get instant help with your studies from our AI chatbot.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-to-br from-white to-purple-50 border-none shadow-lg hover:shadow-xl transition-all">
+              <CardContent className="p-4 md:p-6">
+                <div className="bg-gradient-to-br from-purple-500 to-pink-500 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
+                  <Video className="h-6 w-6 text-white" />
+                </div>
+                <h3 className="text-base md:text-xl font-semibold mb-2">Video Lectures</h3>
+                <p className="text-sm md:text-base text-gray-600">
+                  Learn through curated video content and tutorials.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-to-br from-white to-green-50 border-none shadow-lg hover:shadow-xl transition-all">
+              <CardContent className="p-4 md:p-6">
+                <div className="bg-gradient-to-br from-green-500 to-teal-500 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
+                  <GraduationCap className="h-6 w-6 text-white" />
+                </div>
+                <h3 className="text-base md:text-xl font-semibold mb-2">Study Mode</h3>
+                <p className="text-sm md:text-base text-gray-600">
+                  Create personalized study sessions with notes and videos.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-to-br from-white to-orange-50 border-none shadow-lg hover:shadow-xl transition-all">
+              <CardContent className="p-4 md:p-6">
+                <div className="bg-gradient-to-br from-orange-500 to-red-500 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
                   <BookOpen className="h-6 w-6 text-white" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Quality Notes</h3>
-                <p className="text-gray-600">
+                <h3 className="text-base md:text-xl font-semibold mb-2">Quality Notes</h3>
+                <p className="text-sm md:text-base text-gray-600">
                   Access comprehensive study materials curated by experts.
                 </p>
               </CardContent>
             </Card>
-            <Card className="bg-gradient-to-br from-white to-purple-50 border-none shadow-lg hover:shadow-xl transition-all">
-              <CardContent className="p-6">
-                <div className="bg-gradient-to-br from-purple-500 to-pink-500 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
+
+            <Card className="bg-gradient-to-br from-white to-rose-50 border-none shadow-lg hover:shadow-xl transition-all">
+              <CardContent className="p-4 md:p-6">
+                <div className="bg-gradient-to-br from-rose-500 to-pink-500 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
                   <FileText className="h-6 w-6 text-white" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Previous Papers</h3>
-                <p className="text-gray-600">
-                  Practice with previous year question papers to excel in exams.
+                <h3 className="text-base md:text-xl font-semibold mb-2">Previous Papers</h3>
+                <p className="text-sm md:text-base text-gray-600">
+                  Practice with previous year question papers.
                 </p>
               </CardContent>
             </Card>
-            <Card className="bg-gradient-to-br from-white to-green-50 border-none shadow-lg hover:shadow-xl transition-all">
-              <CardContent className="p-6">
-                <div className="bg-gradient-to-br from-green-500 to-teal-500 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
+
+            <Card className="bg-gradient-to-br from-white to-cyan-50 border-none shadow-lg hover:shadow-xl transition-all">
+              <CardContent className="p-4 md:p-6">
+                <div className="bg-gradient-to-br from-cyan-500 to-blue-500 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
                   <Users className="h-6 w-6 text-white" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Community Support</h3>
-                <p className="text-gray-600">
-                  Join a community of learners and get support when needed.
+                <h3 className="text-base md:text-xl font-semibold mb-2">Community</h3>
+                <p className="text-sm md:text-base text-gray-600">
+                  Join a community of learners and share knowledge.
                 </p>
               </CardContent>
             </Card>
@@ -133,7 +171,7 @@ export default function Home() {
             Available Branches
           </h2>
           {isLoading ? (
-            <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
               {[...Array(4)].map((_, i) => (
                 <Card key={i} className="animate-pulse">
                   <CardContent className="p-6">
@@ -145,23 +183,23 @@ export default function Home() {
               ))}
             </div>
           ) : (
-            <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
               {branches.map((branch) => (
-                <Link key={branch._id} href={`/branch/${branch._id}`}>
+                
                   <Card className="group hover:shadow-xl transition-all cursor-pointer overflow-hidden">
                     <CardContent className={cn(
-                      "p-6 relative",
+                      "p-4 md:p-6 relative",
                       getRandomGradient()
                     )}>
                       <div className="absolute inset-0 bg-black/5" />
                       <div className="relative">
-                        <GraduationCap className="h-8 w-8 text-white mb-4 group-hover:scale-110 transition-transform" />
-                        <h3 className="text-lg font-semibold mb-1 text-white">{branch.name}</h3>
-                        <p className="text-sm text-white/80">{branch.code}</p>
+                        <GraduationCap className="h-6 w-6 md:h-8 md:w-8 text-white mb-3 md:mb-4 group-hover:scale-110 transition-transform" />
+                        <h3 className="text-base md:text-lg font-semibold mb-1 text-white">{branch.name}</h3>
+                        <p className="text-xs md:text-sm text-white/80">{branch.code}</p>
                       </div>
                     </CardContent>
                   </Card>
-                </Link>
+               
               ))}
             </div>
           )}

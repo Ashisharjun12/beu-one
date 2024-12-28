@@ -5,18 +5,12 @@ import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useSession } from "next-auth/react";
-import {
-  Sheet,
-  SheetContent,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import { Menu, BookOpen, FileText, LifeBuoy, MessageCircle, LogIn } from "lucide-react";
-import { useState } from "react";
+import UserAccountNav from "./UserAccountNav";
+import { BookOpen, FileText, GraduationCap } from "lucide-react";
 
 export default function Navbar() {
   const pathname = usePathname();
   const { data: session } = useSession();
-  const [isOpen, setIsOpen] = useState(false);
 
   const navItems = [
     {
@@ -30,79 +24,38 @@ export default function Navbar() {
       icon: FileText,
     },
     {
-      title: "Support",
-      href: "/support",
-      icon: LifeBuoy,
-    },
-    {
-      title: "Contact",
-      href: "/contact",
-      icon: MessageCircle,
+      title: "Study Mode",
+      href: "/studymode",
+      icon: GraduationCap,
     },
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600">
-      <nav className="container mx-auto px-4 h-16 flex items-center justify-between">
-        <Link href="/" className="flex items-center space-x-2">
-          <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-100">
-            BeyOne
-          </span>
-        </Link>
+    <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
+      <nav className="container mx-auto px-4 h-16">
+        <div className="flex h-full items-center justify-between">
+          {/* Logo - Left Section */}
+          <Link href="/" className="flex items-center space-x-2">
+            <BookOpen className="h-6 w-6 text-blue-600" />
+            <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
+              BeyOne
+            </span>
+          </Link>
 
-        {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center space-x-6">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  "flex items-center space-x-2 text-sm font-medium transition-colors hover:text-white/90",
-                  pathname === item.href ? "text-white" : "text-white/70"
-                )}
-              >
-                <Icon className="h-4 w-4" />
-                <span>{item.title}</span>
-              </Link>
-            );
-          })}
-          {session ? (
-            <Link href="/dashboard">
-              <Button variant="secondary" size="sm">
-                Dashboard
-              </Button>
-            </Link>
-          ) : (
-            <Link href="/login">
-              <Button variant="secondary" size="sm">
-                <LogIn className="h-4 w-4 mr-2" />
-                Login
-              </Button>
-            </Link>
-          )}
-        </div>
-
-        {/* Mobile Navigation */}
-        <Sheet open={isOpen} onOpenChange={setIsOpen}>
-          <SheetTrigger asChild className="md:hidden">
-            <Button variant="ghost" size="icon" className="text-white">
-              <Menu className="h-6 w-6" />
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="right" className="w-64 bg-white">
-            <div className="flex flex-col space-y-4 mt-6">
+          {/* Navigation - Middle Section */}
+          <div className="hidden md:flex items-center justify-center flex-1 mx-6">
+            <div className="flex items-center space-x-1">
               {navItems.map((item) => {
                 const Icon = item.icon;
                 return (
                   <Link
                     key={item.href}
                     href={item.href}
-                    onClick={() => setIsOpen(false)}
                     className={cn(
-                      "flex items-center space-x-2 text-sm font-medium transition-colors hover:text-blue-600",
-                      pathname === item.href ? "text-blue-600" : "text-gray-600"
+                      "px-4 py-2 rounded-md flex items-center space-x-2 text-sm font-medium transition-colors hover:bg-gray-100",
+                      pathname === item.href 
+                        ? "text-blue-600 bg-blue-50" 
+                        : "text-gray-600 hover:text-gray-900"
                     )}
                   >
                     <Icon className="h-4 w-4" />
@@ -110,27 +63,20 @@ export default function Navbar() {
                   </Link>
                 );
               })}
-              {session ? (
-                <Link 
-                  href="/dashboard"
-                  onClick={() => setIsOpen(false)}
-                >
-                  <Button className="w-full">Dashboard</Button>
-                </Link>
-              ) : (
-                <Link 
-                  href="/login"
-                  onClick={() => setIsOpen(false)}
-                >
-                  <Button className="w-full">
-                    <LogIn className="h-4 w-4 mr-2" />
-                    Login
-                  </Button>
-                </Link>
-              )}
             </div>
-          </SheetContent>
-        </Sheet>
+          </div>
+
+          {/* Auth - Right Section */}
+          <div className="flex items-center space-x-4">
+            {session?.user ? (
+              <UserAccountNav user={session.user} />
+            ) : (
+              <Button size="sm" className="bg-blue-600 hover:bg-blue-700" asChild>
+                <Link href="/login">Login</Link>
+              </Button>
+            )}
+          </div>
+        </div>
       </nav>
     </header>
   );

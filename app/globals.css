@@ -1,3 +1,4 @@
+@import "plyr/dist/plyr.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -9,6 +10,13 @@ body {
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+  .scrollbar-none {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
   }
 }
 
@@ -74,5 +82,21 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.plyr {
+  height: 100%;
+}
+
+.plyr--video {
+  height: 100%;
+}
+
+.plyr__video-wrapper {
+  height: 100%;
+}
+
+.plyr iframe {
+  height: 100%;
 }
 

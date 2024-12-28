@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "./providers/auth-provider";
-
 import Navbar from "./components/shared/Navbar";
 import { Toaster } from "@/components/ui/toaster";
+import AIChatButton from "./components/shared/AIChatButton";
+import MobileNav from "./components/shared/MobileNav";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,11 +23,15 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <AuthProvider>
-          <Navbar />
-          <main className="max-w-7xl mx-auto  py-8">
-            {children}
-          </main>
-          <Toaster />
+          <div className="min-h-screen flex flex-col">
+            <Navbar />
+            <main className="flex-1 pb-16 md:pb-0">
+              {children}
+            </main>
+            <MobileNav />
+            <Toaster />
+            <AIChatButton />
+          </div>
         </AuthProvider>
       </body>
     </html>
