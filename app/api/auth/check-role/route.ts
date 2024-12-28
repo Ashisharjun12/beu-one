@@ -1,22 +1,27 @@
 import { NextResponse } from "next/server";
+import { connectToDB } from "@/app/lib/db";
+import User from "@/app/models/user.model";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/lib/auth";
-import dbConnect from "@/app/lib/db";
-import User from "@/app/models/user.model";
 
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);
-    
-    if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!session?.user) {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      );
     }
 
-    await dbConnect();
+    await connectToDB();
     const user = await User.findOne({ email: session.user.email });
     
     return NextResponse.json({ role: user?.role || 'user' });
-  } catch (error) {
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  } catch {
+    return NextResponse.json(
+      { role: 'user' },
+      { status: 500 }
+    );
   }
 } 

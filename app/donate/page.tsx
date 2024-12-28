@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { DollarSign, Copy, Heart, Share2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
+import Image from 'next/image';
 
 export default function DonatePage() {
   const { toast } = useToast();
@@ -44,8 +45,8 @@ export default function DonatePage() {
             Support BeuOne
           </h1>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            "When you take something from society, you have a responsibility to give back. 
-            Your support helps us maintain and improve our educational resources for everyone."
+            &ldquo;When you take something from society, you have a responsibility to give back. 
+            Your support helps us maintain and improve our educational resources for everyone.&rdquo;
           </p>
         </motion.div>
 
@@ -68,10 +69,13 @@ export default function DonatePage() {
               {/* QR Code Image */}
               <div className="flex justify-center">
                 <div className="relative w-48 h-48 border-4 border-blue-100 rounded-lg overflow-hidden">
-                  <img 
+                  <Image 
                     src="/donate.jpg" 
                     alt="UPI QR Code"
-                    className="w-full h-full object-cover"
+                    width={192}
+                    height={192}
+                    className="object-cover"
+                    priority
                   />
                 </div>
               </div>
@@ -134,8 +138,8 @@ export default function DonatePage() {
           className="text-center"
         >
           <blockquote className="text-lg italic text-gray-600">
-            "Education is not preparation for life; education is life itself. 
-            By supporting education, you're supporting the future."
+            &ldquo;Education is not preparation for life; education is life itself. 
+            By supporting education, you&apos;re supporting the future.&rdquo;
           </blockquote>
           <p className="mt-2 text-sm text-gray-500">
             Thank you for your generous support! ❤️
