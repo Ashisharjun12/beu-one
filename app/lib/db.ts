@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { registerModels } from "./models";
 
 let isConnected = false;
 
@@ -14,6 +15,9 @@ export const connectToDB = async () => {
     await mongoose.connect(process.env.MONGODB_URI!);
     isConnected = true;
     console.log("MongoDB connected");
+    
+    // Register all models after connection
+    registerModels();
   } catch (error) {
     console.log(error);
   }

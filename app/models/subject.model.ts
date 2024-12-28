@@ -41,10 +41,9 @@ const subjectSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Clear existing model to prevent OverwriteModelError
-mongoose.models = {};
+export default subjectSchema;
 
-const Subject = mongoose.model("Subject", subjectSchema);
-export default Subject;
+// For backwards compatibility
+export const Subject = mongoose.models.Subject || mongoose.model("Subject", subjectSchema);
 
 

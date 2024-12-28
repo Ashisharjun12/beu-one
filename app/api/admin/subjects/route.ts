@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { connectToDB } from "@/app/lib/db";
-import Subject from "@/app/models/subject.model";
+import { Subject } from "@/app/models/subject.model";
+import { Branch } from "@/app/models/branch.model";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/lib/auth";
 
@@ -58,38 +59,17 @@ export async function POST(req: Request) {
       );
     }
 
-    const subject = await Subject.create({
-      name: body.title.trim(),
-      code: body.code.trim().toUpperCase(),
-      branchId: body.branchId,
-      yearId: body.yearId,
-      semesterId: body.semesterId,
-      creditId: body.creditId,
-      description: body.description?.trim()
-    });
-
+    const subject = await Subject.create(body);
+    
     const populatedSubject = await Subject.findById(subject._id)
-      .populate('branchId', 'name code')
-      .populate('yearId', 'value label')
-      .populate('semesterId', 'value label')
-      .populate('creditId', 'value label');
+      .populate('branchId')
+      .populate('yearId')
+      .populate('semesterId')
+      .populate('creditId');
 
     return NextResponse.json(populatedSubject, { status: 201 });
   } catch (error: any) {
     console.error("Failed to create subject:", error);
-    if (error.code === 11000) {
-      return NextResponse.json(
-        { error: "Subject code must be unique" },
-        { status: 400 }
-      );
-    }
-    if (error.name === 'ValidationError') {
-      const errors = Object.values(error.errors).map((err: any) => err.message);
-      return NextResponse.json(
-        { error: errors.join(', ') },
-        { status: 400 }
-      );
-    }
     return NextResponse.json(
       { error: error.message || "Failed to create subject" },
       { status: 500 }
