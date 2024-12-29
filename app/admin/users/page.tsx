@@ -216,7 +216,6 @@ export default function UsersPage() {
               <TableHead>Email</TableHead>
               <TableHead>Role</TableHead>
               <TableHead>Joined</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -232,25 +231,11 @@ export default function UsersPage() {
                 <TableCell>
                   {new Date(user.createdAt).toLocaleDateString()}
                 </TableCell>
-                <TableCell className="text-right">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleRoleChange(user)}
-                    disabled={isLoading}
-                  >
-                    {user.role === "admin" ? (
-                      <ShieldAlert className="w-4 h-4 text-red-500" />
-                    ) : (
-                      <Shield className="w-4 h-4 text-green-500" />
-                    )}
-                  </Button>
-                </TableCell>
               </TableRow>
             ))}
             {filteredUsers.length === 0 && (
               <TableRow>
-                <TableCell colSpan={5} className="h-24 text-center">
+                <TableCell colSpan={4} className="h-24 text-center">
                   No users found.
                 </TableCell>
               </TableRow>
