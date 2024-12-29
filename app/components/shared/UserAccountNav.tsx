@@ -78,13 +78,6 @@ export default function UserAccountNav({ user }: UserAccountNavProps) {
           </Link>
         </DropdownMenuItem>
         
-        <DropdownMenuItem asChild>
-          <Link href="/settings" className="w-full flex items-center">
-            <Settings className="mr-2 h-4 w-4" />
-            Settings
-          </Link>
-        </DropdownMenuItem>
-        
         <DropdownMenuSeparator />
         
         <DropdownMenuItem
