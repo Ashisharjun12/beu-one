@@ -2,14 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
 import { formatDistanceToNow } from "date-fns";
-import { Plus, Send, MessageSquare, X } from "lucide-react";
+import { Plus, Send, MessageSquare, X, MoreVertical, Edit, Trash2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -17,12 +16,29 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface Voice {
   _id: string;
   content: string;
   user: {
+    _id: string;
     name: string;
     image: string;
   };
@@ -31,12 +47,13 @@ interface Voice {
 
 export default function VoicesPage() {
   const { data: session } = useSession();
-  const router = useRouter();
   const { toast } = useToast();
   const [voices, setVoices] = useState<Voice[]>([]);
   const [content, setContent] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingVoice, setEditingVoice] = useState<Voice | null>(null);
+  const [deleteVoice, setDeleteVoice] = useState<Voice | null>(null);
 
   useEffect(() => {
     fetchVoices();
@@ -92,6 +109,67 @@ export default function VoicesPage() {
     }
   };
 
+  const handleEdit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingVoice) return;
+
+    setIsLoading(true);
+    try {
+      const response = await fetch(`/api/voices/${editingVoice._id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content }),
+      });
+
+      if (!response.ok) throw new Error('Failed to update voice');
+
+      const updatedVoice = await response.json();
+      setVoices(voices.map(voice => 
+        voice._id === updatedVoice._id ? updatedVoice : voice
+      ));
+      setContent("");
+      setEditingVoice(null);
+      setIsDialogOpen(false);
+      toast({
+        title: "Voice updated successfully",
+        description: "Your voice has been updated.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update voice. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!deleteVoice) return;
+
+    try {
+      const response = await fetch(`/api/voices/${deleteVoice._id}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) throw new Error('Failed to delete voice');
+
+      setVoices(voices.filter(voice => voice._id !== deleteVoice._id));
+      setDeleteVoice(null);
+      toast({
+        title: "Voice deleted successfully",
+        description: "Your voice has been deleted.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete voice. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
   if (!session) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -140,9 +218,39 @@ export default function VoicesPage() {
                   <div className="flex-1">
                     <div className="flex items-center justify-between">
                       <h3 className="font-semibold text-blue-900">{voice.user.name}</h3>
-                      <span className="text-sm text-indigo-500 bg-indigo-50 px-2 py-1 rounded-full">
-                        {formatDistanceToNow(new Date(voice.createdAt), { addSuffix: true })}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-indigo-500 bg-indigo-50 px-2 py-1 rounded-full">
+                          {formatDistanceToNow(new Date(voice.createdAt), { addSuffix: true })}
+                        </span>
+                        {session?.user.id === voice.user._id && (
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="icon" className="h-8 w-8">
+                                <MoreVertical className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  setEditingVoice(voice);
+                                  setContent(voice.content);
+                                  setIsDialogOpen(true);
+                                }}
+                              >
+                                <Edit className="h-4 w-4 mr-2" />
+                                Edit
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                className="text-red-600"
+                                onClick={() => setDeleteVoice(voice)}
+                              >
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                Delete
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        )}
+                      </div>
                     </div>
                     <p className="mt-2 text-gray-700 whitespace-pre-wrap">{voice.content}</p>
                   </div>
@@ -153,7 +261,7 @@ export default function VoicesPage() {
         </div>
       </ScrollArea>
 
-      {/* Floating Create Button - Adjusted for mobile */}
+      {/* Floating Create Button */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogTrigger asChild>
           <Button 
@@ -166,10 +274,10 @@ export default function VoicesPage() {
         <DialogContent className="bg-gradient-to-br from-white to-blue-50">
           <DialogHeader>
             <DialogTitle className="text-xl bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
-              Share Your Voice
+              {editingVoice ? "Edit Voice" : "Share Your Voice"}
             </DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+          <form onSubmit={editingVoice ? handleEdit : handleSubmit} className="space-y-4 mt-4">
             <Input
               value={content}
               onChange={(e) => setContent(e.target.value)}
@@ -204,6 +312,22 @@ export default function VoicesPage() {
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={!!deleteVoice} onOpenChange={() => setDeleteVoice(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-red-600">Delete Voice</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this voice? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction className="bg-red-600 hover:bg-red-700" onClick={handleDelete}>Delete</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 } 
